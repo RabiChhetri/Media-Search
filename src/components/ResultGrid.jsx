@@ -54,8 +54,13 @@ const ResultGrid = () => {
     },
     [query, activeTab,dispatch]
   );
-  if (error) return <h1>Error</h1>;
-  if (loading) return <h1>Loading.......</h1>;
+  if (error) return <div className="text-center text-red-500 p-8">
+    <h2 className="text-xl font-semibold mb-2">Error occurred</h2>
+    <p>{error}</p>
+  </div>;
+  if (loading) return <div className="text-center p-8">
+    <h2 className="text-xl">Loading...</h2>
+  </div>;
   return (
     <div className="flex flex-wrap w-full justify-center gap-6 overflow-auto px-10">
       {results.map((item, idx) => {
