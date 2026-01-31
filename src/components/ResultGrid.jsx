@@ -24,30 +24,44 @@ const ResultGrid = () => {
           let data = [];
           if (activeTab == "photos") {
             let res = await fetchPhotos(query);
-            data = res.results.map((item) => ({
+            data = res.results?.map((item) => ({
               id: item.id,
               type: "photo",
-              title: item.alt_description,
-              thumbnail: item.urls.small,
-              src: item.urls.full,
-              url:item.links.html
-            }));
+              title: item.alt_description || item.description || "Untitled Photo",
+              thumbnail: item.urls?.small,
+              src: item.urls?.full,
+              url: item.links?.html
+            })) || [];
           }
           if (activeTab === "videos") {
             let res = await fetchVideos(query);
-            data = res.videos.map((item) => ({
+            data = res.videos?.map((item) => ({
               id: item.id,
               type: "video",
               title: item.user?.name || "Video",
               thumbnail: item.image,
               src: item.video_files?.[0]?.link,
-              url:item.url
-            }));
+              url: item.url
+            })) || [];
           }
 
           dispatch(setResults(data));
         } catch (err) {
-          dispatch(setError(err.message));
+          console.error('API Error:', err);
+          let errorMessage = 'Failed to fetch data';
+          
+          if (err.response) {
+            // API responded with error status
+            errorMessage = `API Error: ${err.response.status} - ${err.response.data?.message || err.response.statusText}`;
+          } else if (err.request) {
+            // Network error
+            errorMessage = 'Network error - please check your connection';
+          } else {
+            // Other error
+            errorMessage = err.message;
+          }
+          
+          dispatch(setError(errorMessage));
         }
       };
       getData();
